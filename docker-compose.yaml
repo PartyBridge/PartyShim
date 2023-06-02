@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  partyshim:
+    image: gcr.io/mineonlium/partyshim
+    ports:
+      - "8080:8080"
+    environment:
+      - "PRIVATE_KEY="
+      - "DEFAULT_PAYMENT_PRIVATE_KEY="
+      - "RPC_URL="
+      - "CONTRACT_ADDRESS="
+      - "SHIM_CA_CERT="
+    volumes:
+      - ./path/to/your/tls/folder:/etc/tls
+
+# Replace 'path/to/your/tls/folder' with the path to the folder containing cert.pem and key_pkcs1.pem on your local system

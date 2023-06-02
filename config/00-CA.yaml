@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mtls-secret
+type: Opaque
+data:
+  ca.crt: |-
+    
+
+  client.crt: |-
+
+  client.key: |-
