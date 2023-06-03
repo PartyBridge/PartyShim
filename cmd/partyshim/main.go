@@ -13,6 +13,7 @@ import (
 	"math/big"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -253,8 +254,7 @@ func (e *PartyShim) transfer(w http.ResponseWriter, r *http.Request) {
 	err, txid := e.completeTransfer(*transferRequest, pk)
 	if err != nil {
 		fmt.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		w.Write([]byte("insufficient balance"))
 	}
 
 	// return the transaction id
@@ -372,6 +372,11 @@ func (e *PartyShim) completeTransfer(mr MintRequest, privateKey *ecdsa.PrivateKe
 		mr.Amount = new(big.Int).Sub(balance, new(big.Int).Mul(gasPrice, big.NewInt(int64(gasLimit))))
 	}
 
+	// if the balance is less than 0 after adjustment, return an error
+	if mr.Amount.Cmp(big.NewInt(0)) == -1 {
+		return errors.New("insufficient balance"), nil
+	}
+
 	// set chain id
 	chainID, err := partyclient.ChainID(ctx)
 	if err != nil {
@@ -383,7 +388,11 @@ func (e *PartyShim) completeTransfer(mr MintRequest, privateKey *ecdsa.PrivateKe
 
 	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
 	if err != nil {
-		return err, nil
+		// if the transaction fails due to insufficient funds, deduct %5 from the amount and try again
+		if strings.Contains(err.Error(), "insufficient funds for gas * price + value") {
+			mr.Amount = new(big.Int).Sub(mr.Amount, new(big.Int).Mul(mr.Amount, big.NewInt(5)))
+			return e.completeTransfer(mr, privateKey)
+		}
 	}
 
 	if err := partyclient.SendTransaction(ctx, signedTx); err != nil {
