@@ -103,6 +103,7 @@ subjectAltName          = @alt_names
 [alt_names]
 DNS.1   = partyshim-wgrams
 DNS.2   = partyshim-partychain-wocta
+DNS.3   = partyshim-partychain-bscusdt
 ```
 
 
