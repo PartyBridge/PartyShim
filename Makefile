@@ -1,2 +1,3 @@
 image:
-	@gcloud builds submit --tag gcr.io/mineonlium/partyshim .
+	@docker build -t jeffthenaef/shm . 
+	@docker push jeffthenaef/shm
