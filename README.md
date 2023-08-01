@@ -43,13 +43,13 @@ Follow the steps below to integrate a new chain with `PartyBridge`:
 
 Example request to the `/mint` route: 
 ```
-curl -v "https://0.0.0.0:8080/mint" \
+curl -v "https://45.79.60.232/mint" \
        -X POST \
        -k \
        -H "Content-Type: application/json" \
        -d '{"amount": 10000, "toAddress":"0x5dd4039c32F6EEF427D6F67600D8920c9631D59D"}' \
        --cert ./client.crt \
-       --key ./key.crt
+       --key ./client.key
 ```
 
 

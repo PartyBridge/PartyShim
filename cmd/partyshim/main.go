@@ -118,17 +118,17 @@ func main() {
 		ClientCAs: caCertPool,
 	}
 
+	handler := http.NewServeMux()
+	handler.HandleFunc("/mint", ps.mint)
+	handler.HandleFunc("/transfer", ps.transfer)
+	handler.HandleFunc("/transferBSCUSDT", ps.transferBUSDT)
+
 	// Create a server with the TLS configuration
 	server := &http.Server{
 		Addr:      ":8080",
-		Handler:   nil,
+		Handler:   handler,
 		TLSConfig: tlsConfig,
 	}
-
-	// Register the HTTP handlers
-	http.HandleFunc("/mint", ps.mint)
-	http.HandleFunc("/transfer", ps.transfer)
-	http.HandleFunc("/transferBSCUSDT", ps.transferBUSDT)
 
 	fmt.Println("Starting shim on port 8080")
 	// Start the HTTPS server with TLS
